@@ -4,13 +4,13 @@ USE Store_rtp;
 
 SHOW TABLES;
 
-CREATE TABLE category(
+CREATE TABLE IF NOT EXISTS category(
    Id_category INT AUTO_INCREMENT,
    name VARCHAR(100) NOT NULL,
    PRIMARY KEY(Id_category)
 );
 
-CREATE TABLE product(
+CREATE TABLE IF NOT EXISTS product(
    Id_product INT AUTO_INCREMENT,
    name VARCHAR(100) NOT NULL,
    description TEXT,
@@ -18,7 +18,7 @@ CREATE TABLE product(
    quantity SMALLINT,
    Id_category INT NOT NULL,
    PRIMARY KEY(Id_product),
-   FOREIGN KEY(Id_category) REFERENCES category(Id_category)
+   FOREIGN KEY(Id_category) REFERENCES category(Id_category) ON DELETE CASCADE
 );
 
 INSERT INTO category (name) VALUES 
@@ -33,3 +33,5 @@ INSERT INTO product (name, description, price, quantity, Id_category) VALUES
 
 DESCRIBE product;
 SELECT * FROM product;
+
+SELECT * FROM category WHERE name = 'Electronics' INNER JOIN product ON category.Id_category = product.Id_category;

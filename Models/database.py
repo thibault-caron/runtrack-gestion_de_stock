@@ -12,7 +12,7 @@ class Database:
         self.cursor = None
 
     def connect(self):
-        # Establish the database connection
+        ''' Establish the database connection '''
         self.conn = mysql.connector.connect(
             host=os.getenv("HOST"),
             user=os.getenv("USER"),
@@ -22,26 +22,27 @@ class Database:
         self.cursor = self.conn.cursor()
 
     def populate_categories(self):
-        # Insert categories
+        '''Insert categories'''
         categories = [
             ("Electronics",),
             ("Clothing",),
             ("Books",)
         ]
         self.cursor.executemany("INSERT INTO category (name) VALUES (%s)", categories)
+        self.conn.commit()
 
     def populate_products(self):
-        # Insert products
+        '''Insert products'''
         products = [
             ("Laptop", "A high performance laptop", 999.99, 10, 1),
             ("T-Shirt", "A comfortable cotton t-shirt", 19.99, 50, 2),
             ("Novel", "A best-selling novel", 14.99, 30, 3)
         ]
         self.cursor.executemany("INSERT INTO product (name, description, price, quantity, Id_category) VALUES (%s, %s, %s, %s, %s)", products)
+        self.conn.commit()
 
     def close(self):
-        # Commit the transaction and close the connection
-        self.conn.commit()
+        '''close the connection'''
         self.cursor.close()
         self.conn.close()
 
