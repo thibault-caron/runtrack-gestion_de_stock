@@ -58,14 +58,14 @@ class Database:
     def update_product(self, product_id, name, description, price, quantity, category_id):
         '''Update an existing product'''
         self.cursor.execute(
-            "UPDATE product SET name=%s, description=%s, price=%s, quantity=%s, Id_category=%s WHERE id=%s",
+            "UPDATE product SET name=%s, description=%s, price=%s, quantity=%s, Id_category=%s WHERE Id_product=%s",
             (name, description, price, quantity, category_id, product_id)
         )
         self.conn.commit()
 
     def delete_product(self, product_id):
         '''Delete a product'''
-        self.cursor.execute("DELETE FROM product WHERE id=%s", (product_id,))
+        self.cursor.execute("DELETE FROM product WHERE Id_product=%s", (product_id,))
         self.conn.commit()
 
     def close(self):

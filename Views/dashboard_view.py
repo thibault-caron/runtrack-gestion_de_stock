@@ -1,6 +1,9 @@
 import customtkinter as ctk
 import tkinter as tk
 from tkinter import ttk
+from Views.add_product_popup import AddProductPopup
+from Views.update_product_popup import UpdateProductPopup
+from Views.delete_product_popup import DeleteProductPopup
 
 class DashboardView(ctk.CTk):
     def __init__(self, controller):
@@ -10,7 +13,7 @@ class DashboardView(ctk.CTk):
         self.geometry("800x600")
 
         style = ttk.Style()
-        style.theme_use("clam"),
+        style.theme_use("clam")
         style.configure("Treeview", 
                         background="black", 
                         foreground="white", 
@@ -32,13 +35,13 @@ class DashboardView(ctk.CTk):
         self.product_table.heading("Category", text="Category")
         self.product_table.pack(fill=ctk.BOTH, expand=True)
 
-        self.add_button = ctk.CTkButton(self, text="Add Product", command=self.controller.add_product)
+        self.add_button = ctk.CTkButton(self, text="Add Product", command=self.show_add_product_popup)
         self.add_button.pack(side=ctk.LEFT, padx=10, pady=10)
 
-        self.update_button = ctk.CTkButton(self, text="Update Product", command=self.controller.update_product)
+        self.update_button = ctk.CTkButton(self, text="Update Product", command=self.show_update_product_popup)
         self.update_button.pack(side=ctk.LEFT, padx=10, pady=10)
 
-        self.delete_button = ctk.CTkButton(self, text="Delete Product", command=self.controller.delete_product)
+        self.delete_button = ctk.CTkButton(self, text="Delete Product", command=self.show_delete_product_popup)
         self.delete_button.pack(side=ctk.LEFT, padx=10, pady=10)
 
     def display_products(self, products):
@@ -46,3 +49,16 @@ class DashboardView(ctk.CTk):
             self.product_table.delete(row)
         for product in products:
             self.product_table.insert("", tk.END, values=product)
+
+    def show_add_product_popup(self):
+        AddProductPopup(self.controller)
+
+    def show_update_product_popup(self):
+        selected_item = self.product_table.selection()[0]
+        product = self.product_table.item(selected_item)['values']
+        UpdateProductPopup(self.controller, product)
+
+    def show_delete_product_popup(self):
+        selected_item = self.product_table.selection()[0]
+        product_id = self.product_table.item(selected_item)['values'][0]
+        DeleteProductPopup(self.controller, product_id)
