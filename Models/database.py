@@ -41,6 +41,33 @@ class Database:
         self.cursor.executemany("INSERT INTO product (name, description, price, quantity, Id_category) VALUES (%s, %s, %s, %s, %s)", products)
         self.conn.commit()
 
+    def fetch_products(self):
+        '''Fetch all products'''
+        self.connect()
+        self.cursor.execute("SELECT * FROM product")
+        return self.cursor.fetchall()
+
+    def add_product(self, name, description, price, quantity, category_id):
+        '''Add a new product'''
+        self.cursor.execute(
+            "INSERT INTO product (name, description, price, quantity, Id_category) VALUES (%s, %s, %s, %s, %s)",
+            (name, description, price, quantity, category_id)
+        )
+        self.conn.commit()
+
+    def update_product(self, product_id, name, description, price, quantity, category_id):
+        '''Update an existing product'''
+        self.cursor.execute(
+            "UPDATE product SET name=%s, description=%s, price=%s, quantity=%s, Id_category=%s WHERE id=%s",
+            (name, description, price, quantity, category_id, product_id)
+        )
+        self.conn.commit()
+
+    def delete_product(self, product_id):
+        '''Delete a product'''
+        self.cursor.execute("DELETE FROM product WHERE id=%s", (product_id,))
+        self.conn.commit()
+
     def close(self):
         '''close the connection'''
         self.cursor.close()
