@@ -4,6 +4,7 @@ from tkinter import ttk
 from Views.add_product_popup import AddProductPopup
 from Views.update_product_popup import UpdateProductPopup
 from Views.delete_product_popup import DeleteProductPopup
+from Views.error_popup import ErrorPopup
 
 class DashboardView(ctk.CTk):
     def __init__(self, controller):
@@ -18,10 +19,12 @@ class DashboardView(ctk.CTk):
                         background="black", 
                         foreground="white", 
                         fieldbackground="black", 
-                        rowheight=25)
+                        rowheight=30,
+                        font=('Helvetica', 12))
         style.configure("Treeview.Heading", 
                         background="black", 
-                        foreground="white")
+                        foreground="white",
+                        font=('Helvetica', 13, 'bold'))
         style.map("Treeview", 
                   background=[('selected', 'gray')],
                   foreground=[('selected', 'black')])
@@ -33,6 +36,15 @@ class DashboardView(ctk.CTk):
         self.product_table.heading("Price", text="Price")
         self.product_table.heading("Quantity", text="Quantity")
         self.product_table.heading("Category", text="Category")
+
+        # Set column widths and stretch properties
+        self.product_table.column("ID", width=50, stretch=tk.NO)
+        self.product_table.column("Name", width=150, stretch=tk.YES)
+        self.product_table.column("Description", width=300, stretch=tk.YES)
+        self.product_table.column("Price", width=100, stretch=tk.YES)
+        self.product_table.column("Quantity", width=80, stretch=tk.NO)
+        self.product_table.column("Category", width=140, stretch=tk.YES)
+
         self.product_table.pack(fill=ctk.BOTH, expand=True)
 
         self.add_button = ctk.CTkButton(self, text="Add Product", command=self.show_add_product_popup)
@@ -54,9 +66,12 @@ class DashboardView(ctk.CTk):
         AddProductPopup(self.controller)
 
     def show_update_product_popup(self):
-        selected_item = self.product_table.selection()[0]
-        product = self.product_table.item(selected_item)['values']
-        UpdateProductPopup(self.controller, product)
+        try:
+            selected_item = self.product_table.selection()[0]
+            product = self.product_table.item(selected_item)['values']
+            UpdateProductPopup(self.controller, product)
+        except IndexError:
+            ErrorPopup("You must select a product to update.")
 
     def show_delete_product_popup(self):
         selected_item = self.product_table.selection()[0]

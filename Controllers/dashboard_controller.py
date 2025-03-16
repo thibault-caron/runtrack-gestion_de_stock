@@ -1,5 +1,7 @@
 from Models.database import Database
 from Views.dashboard_view import DashboardView
+from Views.add_product_popup import AddProductPopup
+from Views.update_product_popup import UpdateProductPopup
 
 class DashboardController:
     def __init__(self):
@@ -11,6 +13,9 @@ class DashboardController:
     def fetch_products(self):
         products = self.model.fetch_products()
         self.view.display_products(products)
+
+    def fetch_categories(self):
+        return self.model.fetch_categories()
 
     def add_product(self, name, description, price, quantity, category_id):
         self.model.add_product(name, description, price, quantity, category_id)

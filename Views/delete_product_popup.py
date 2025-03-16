@@ -6,7 +6,8 @@ class DeleteProductPopup(ctk.CTkToplevel):
         self.controller = controller
         self.product_id = product_id
         self.title("Delete Product")
-        self.geometry("300x150")
+        self.geometry("250x150")
+        self.lift()  # Bring the popup to the front
 
         label = ctk.CTkLabel(self, text=f"Are you sure you want to delete product ID {product_id}?")
         label.pack(pady=20)

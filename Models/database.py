@@ -42,9 +42,19 @@ class Database:
         self.conn.commit()
 
     def fetch_products(self):
-        '''Fetch all products'''
+        '''Fetch all products with category names'''
         self.connect()
-        self.cursor.execute("SELECT * FROM product")
+        self.cursor.execute("""
+            SELECT product.Id_product, product.name, product.description, product.price, product.quantity, category.name AS category_name
+            FROM product
+            LEFT JOIN category ON product.Id_category = category.Id_category
+        """)
+        return self.cursor.fetchall()
+
+    def fetch_categories(self):
+        '''Fetch all categories'''
+        self.connect()
+        self.cursor.execute("SELECT Id_category, name FROM category")
         return self.cursor.fetchall()
 
     def add_product(self, name, description, price, quantity, category_id):

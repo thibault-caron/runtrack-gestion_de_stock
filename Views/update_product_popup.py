@@ -1,4 +1,6 @@
 import customtkinter as ctk
+from Views.error_popup import ErrorPopup
+import tkinter as tk
 
 class UpdateProductPopup(ctk.CTkToplevel):
     def __init__(self, controller, product):
@@ -6,7 +8,11 @@ class UpdateProductPopup(ctk.CTkToplevel):
         self.controller = controller
         self.product = product
         self.title("Update Product")
-        self.geometry("400x300")
+        self.geometry("400x500")
+        self.lift()  # Bring the popup to the front
+
+        categories = self.controller.fetch_categories()
+        self.category_dict = {name: id for id, name in categories}
 
         name_label = ctk.CTkLabel(self, text="Name")
         name_label.pack(pady=5)
@@ -32,11 +38,12 @@ class UpdateProductPopup(ctk.CTkToplevel):
         self.quantity_entry.insert(0, product[4])
         self.quantity_entry.pack(pady=5)
 
-        category_label = ctk.CTkLabel(self, text="Category ID")
+        category_label = ctk.CTkLabel(self, text="Category")
         category_label.pack(pady=5)
-        self.category_entry = ctk.CTkEntry(self)
-        self.category_entry.insert(0, product[5])
-        self.category_entry.pack(pady=5)
+        self.category_var = tk.StringVar(self)
+        self.category_menu = ctk.CTkOptionMenu(self, variable=self.category_var, values=list(self.category_dict.keys()))
+        self.category_menu.set(product[5])  # Set the current category
+        self.category_menu.pack(pady=5)
 
         button_frame = ctk.CTkFrame(self)
         button_frame.pack(pady=10)
@@ -48,13 +55,23 @@ class UpdateProductPopup(ctk.CTkToplevel):
         back_button.pack(side=ctk.LEFT, padx=10)
 
     def update_product(self):
-        print(f"Updating product ID {self.product[0]}")
-        self.controller.update_product(
-            self.product[0],
-            self.name_entry.get(),
-            self.description_entry.get(),
-            self.price_entry.get(),
-            self.quantity_entry.get(),
-            self.category_entry.get()
-        )
+        name = self.name_entry.get()
+        description = self.description_entry.get()
+        price = self.price_entry.get()
+        quantity = self.quantity_entry.get()
+        category_name = self.category_var.get()
+
+        if not name or not description or not price or not quantity or not category_name:
+            ErrorPopup("All fields must be filled.")
+            return
+
+        try:
+            price = float(price)
+            quantity = int(quantity)
+            category_id = self.category_dict[category_name]
+        except ValueError:
+            ErrorPopup("Price and Quantity must be valid numbers.")
+            return
+
+        self.controller.update_product(self.product[0], name, description, price, quantity, category_id)
         self.destroy()
