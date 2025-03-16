@@ -99,6 +99,13 @@ class DashboardView(ctk.CTk):
 
     def sort_table(self, col):
         data = [(self.product_table.set(child, col), child) for child in self.product_table.get_children('')]
+        
+        # Convert data to appropriate types for sorting
+        if col in ["ID", "Price", "Quantity"]:
+            data = [(float(val) if col == "Price" else int(val), child) for val, child in data]
+        else:
+            data = [(val, child) for val, child in data]
+
         data.sort(reverse=self.sort_order)
         for index, (val, child) in enumerate(data):
             self.product_table.move(child, '', index)
