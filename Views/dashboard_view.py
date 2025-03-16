@@ -29,7 +29,11 @@ class DashboardView(ctk.CTk):
                   background=[('selected', 'gray')],
                   foreground=[('selected', 'black')])
 
-        self.product_table = ttk.Treeview(self, columns=("ID", "Name", "Description", "Price", "Quantity", "Category"), show='headings', style="Treeview")
+        # Create a frame to contain the product_table and the scrollbar
+        table_frame = ctk.CTkFrame(self)
+        table_frame.pack(fill=ctk.BOTH, expand=True)
+
+        self.product_table = ttk.Treeview(table_frame, columns=("ID", "Name", "Description", "Price", "Quantity", "Category"), show='headings', style="Treeview")
         self.product_table.heading("ID", text="ID")
         self.product_table.heading("Name", text="Name")
         self.product_table.heading("Description", text="Description")
@@ -45,16 +49,25 @@ class DashboardView(ctk.CTk):
         self.product_table.column("Quantity", width=80, stretch=tk.NO)
         self.product_table.column("Category", width=140, stretch=tk.YES)
 
+        # Create a scrollbar and link it to the product_table
+        self.scrollbar = ttk.Scrollbar(table_frame, orient=tk.VERTICAL, command=self.product_table.yview)
+        self.product_table.configure(yscroll=self.scrollbar.set)
+        self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
         self.product_table.pack(fill=ctk.BOTH, expand=True)
 
-        self.add_button = ctk.CTkButton(self, text="Add Product", command=self.show_add_product_popup)
-        self.add_button.pack(side=ctk.LEFT, padx=10, pady=10)
+        # Create a frame for the buttons
+        button_frame = ctk.CTkFrame(self)
+        button_frame.pack(fill=ctk.X, pady=10)
 
-        self.update_button = ctk.CTkButton(self, text="Update Product", command=self.show_update_product_popup)
-        self.update_button.pack(side=ctk.LEFT, padx=10, pady=10)
+        self.add_button = ctk.CTkButton(button_frame, text="Add Product", command=self.show_add_product_popup)
+        self.add_button.pack(side=ctk.LEFT, padx=10)
 
-        self.delete_button = ctk.CTkButton(self, text="Delete Product", command=self.show_delete_product_popup)
-        self.delete_button.pack(side=ctk.LEFT, padx=10, pady=10)
+        self.update_button = ctk.CTkButton(button_frame, text="Update Product", command=self.show_update_product_popup)
+        self.update_button.pack(side=ctk.LEFT, padx=10)
+
+        self.delete_button = ctk.CTkButton(button_frame, text="Delete Product", command=self.show_delete_product_popup)
+        self.delete_button.pack(side=ctk.LEFT, padx=10)
 
     def display_products(self, products):
         for row in self.product_table.get_children():
@@ -71,9 +84,12 @@ class DashboardView(ctk.CTk):
             product = self.product_table.item(selected_item)['values']
             UpdateProductPopup(self.controller, product)
         except IndexError:
-            ErrorPopup("You must select a product to update.")
+            ErrorPopup(self, "You must select a product to update.")
 
     def show_delete_product_popup(self):
-        selected_item = self.product_table.selection()[0]
-        product_id = self.product_table.item(selected_item)['values'][0]
-        DeleteProductPopup(self.controller, product_id)
+        try:
+            selected_item = self.product_table.selection()[0]
+            product_id = self.product_table.item(selected_item)['values'][0]
+            DeleteProductPopup(self.controller, product_id)
+        except IndexError:
+            ErrorPopup(self, "You must select a product to delete.")

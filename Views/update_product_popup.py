@@ -9,6 +9,7 @@ class UpdateProductPopup(ctk.CTkToplevel):
         self.product = product
         self.title("Update Product")
         self.geometry("400x500")
+        self.transient(controller.view)  # Set the parent window
         self.lift()  # Bring the popup to the front
 
         categories = self.controller.fetch_categories()
@@ -62,7 +63,7 @@ class UpdateProductPopup(ctk.CTkToplevel):
         category_name = self.category_var.get()
 
         if not name or not description or not price or not quantity or not category_name:
-            ErrorPopup("All fields must be filled.")
+            ErrorPopup(self, "All fields must be filled.")
             return
 
         try:
@@ -70,7 +71,7 @@ class UpdateProductPopup(ctk.CTkToplevel):
             quantity = int(quantity)
             category_id = self.category_dict[category_name]
         except ValueError:
-            ErrorPopup("Price and Quantity must be valid numbers.")
+            ErrorPopup(self, "Price and Quantity must be valid numbers.")
             return
 
         self.controller.update_product(self.product[0], name, description, price, quantity, category_id)
