@@ -21,8 +21,7 @@ class Database:
             )
             return conn
         except Error as e:
-            print(f"Error: {e}")
-            return None
+            raise Exception(f"Database connection error: {e}")
 
     def populate_categories(self):
         '''Insert categories'''

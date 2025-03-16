@@ -4,7 +4,7 @@ class ErrorPopup(ctk.CTkToplevel):
     def __init__(self, parent, message):
         super().__init__(parent)
         self.title("Error")
-        self.geometry("300x150")
+        self.geometry("400x150")
         self.transient(parent)  # Set the parent window
         self.lift()  # Bring the popup to the front
 

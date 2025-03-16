@@ -34,12 +34,12 @@ class DashboardView(ctk.CTk):
         table_frame.pack(fill=ctk.BOTH, expand=True)
 
         self.product_table = ttk.Treeview(table_frame, columns=("ID", "Name", "Description", "Price", "Quantity", "Category"), show='headings', style="Treeview")
-        self.product_table.heading("ID", text="ID")
-        self.product_table.heading("Name", text="Name")
-        self.product_table.heading("Description", text="Description")
-        self.product_table.heading("Price", text="Price")
-        self.product_table.heading("Quantity", text="Quantity")
-        self.product_table.heading("Category", text="Category")
+        self.product_table.heading("ID", text="ID", command=lambda: self.sort_table("ID"))
+        self.product_table.heading("Name", text="Name", command=lambda: self.sort_table("Name"))
+        self.product_table.heading("Description", text="Description", command=lambda: self.sort_table("Description"))
+        self.product_table.heading("Price", text="Price", command=lambda: self.sort_table("Price"))
+        self.product_table.heading("Quantity", text="Quantity", command=lambda: self.sort_table("Quantity"))
+        self.product_table.heading("Category", text="Category", command=lambda: self.sort_table("Category"))
 
         # Set column widths and stretch properties
         self.product_table.column("ID", width=50, stretch=tk.NO)
@@ -69,6 +69,9 @@ class DashboardView(ctk.CTk):
         self.delete_button = ctk.CTkButton(button_frame, text="Delete Product", command=self.show_delete_product_popup)
         self.delete_button.pack(side=ctk.LEFT, padx=10)
 
+        self.sort_column = None
+        self.sort_order = True
+
     def display_products(self, products):
         for row in self.product_table.get_children():
             self.product_table.delete(row)
@@ -93,3 +96,11 @@ class DashboardView(ctk.CTk):
             DeleteProductPopup(self.controller, product_id)
         except IndexError:
             ErrorPopup(self, "You must select a product to delete.")
+
+    def sort_table(self, col):
+        data = [(self.product_table.set(child, col), child) for child in self.product_table.get_children('')]
+        data.sort(reverse=self.sort_order)
+        for index, (val, child) in enumerate(data):
+            self.product_table.move(child, '', index)
+        self.sort_order = not self.sort_order
+        self.sort_column = col
